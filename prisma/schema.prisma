@@ -1,0 +1,370 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum UserRole {
+  CLIENT
+  ADMIN
+  ACCOUNT_MANAGER
+}
+
+enum LinkStatus {
+  PENDING
+  LINKED
+  REFUSED
+  REVOKED
+}
+
+enum CampaignStatus {
+  DRAFT
+  QUEUED
+  RUNNING
+  PAUSED
+  ENDED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum AlertType {
+  LINK_STATUS
+  CAMPAIGN_STATUS
+  BUDGET_ALERT
+  PERFORMANCE_ALERT
+  TECHNICAL_ALERT
+  INFO
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum AlertAudience {
+  CLIENT
+  MANAGER
+  ADMIN
+}
+
+enum DocumentType {
+  REPORT_PDF
+  INVOICE_PDF
+  CAMPAIGN_ASSETS
+}
+
+// =====================================================
+// TABLES PRINCIPALES
+// =====================================================
+
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  firstName   String?
+  lastName    String?
+  role        UserRole  @default(CLIENT)
+  passwordHash String
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  clientAccount     ClientAccount?
+  campaignRequests  CampaignRequest[]
+  alerts           Alert[]
+  payments         Payment[]
+  auditLogs        AuditLog[]
+  refreshTokens    RefreshToken[]
+  googleTokens     GoogleTokens?
+
+  @@map("users")
+}
+
+model ClientAccount {
+  id               String     @id @default(cuid())
+  userId           String     @unique
+  googleCustomerId String?    @unique // ID du compte Google Ads (sans tirets)
+  linkStatus       LinkStatus @default(PENDING)
+  resourceName     String?    // Resource name du CustomerClientLink
+  linkRequestedAt  DateTime?
+  linkedAt         DateTime?
+  lastSyncAt       DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  // Relations
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaignRequests CampaignRequest[]
+
+  @@map("client_accounts")
+}
+
+model CampaignRequest {
+  id                 String         @id @default(cuid())
+  clientAccountId    String
+  
+  // Configuration campagne
+  clipUrl            String         // URL de la vidéo YouTube
+  clipTitle          String         // Titre du clip
+  artistsList        String         // Liste d'artistes similaires (JSON array ou texte)
+  countries          String[]       // Pays ciblés
+  durationDays       Int            @default(30) // Durée fixe 30 jours
+  
+  // Status et planification
+  status             CampaignStatus @default(DRAFT)
+  startsAt           DateTime?      // Date de début planifiée
+  endsAt             DateTime?      // Date de fin planifiée
+  actualStartedAt    DateTime?      // Date de début réelle
+  actualEndedAt      DateTime?      // Date de fin réelle
+  
+  // Google Ads IDs
+  googleCampaignId   String?        // ID de la campagne Google Ads
+  googleAdGroupId    String?        // ID du groupe d'annonces
+  googleAdIds        String[]       // IDs des annonces créées
+  
+  // Configuration avancée (JSON)
+  targetingConfig    Json?          // Configuration de ciblage détaillée
+  budgetConfig       Json?          // Configuration du budget
+  
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  // Relations
+  clientAccount      ClientAccount  @relation(fields: [clientAccountId], references: [id], onDelete: Cascade)
+  kpiDaily          KpiDaily[]
+  alerts            Alert[]
+  documents         Document[]
+  payments          Payment[]
+
+  @@map("campaign_requests")
+}
+
+model KpiDaily {
+  id                  String          @id @default(cuid())
+  campaignId          String
+  date                DateTime        @db.Date
+  
+  // Métriques YouTube/Organic
+  views               BigInt?         // Vues de la vidéo
+  likes               Int?            // Likes de la vidéo
+  subscribers         Int?            // Nouveaux abonnés
+  comments            Int?            // Commentaires
+  shares              Int?            // Partages
+  watchTime           BigInt?         // Temps de visionnage (secondes)
+  
+  // Métriques Google Ads
+  impressions         BigInt?         // Impressions
+  clicks              Int?            // Clics
+  costMicros          BigInt?         // Coût en micro-unités (1M micros = 1 EUR)
+  averageCpvMicros    BigInt?         // CPV moyen en micro-unités
+  ctr                 Float?          // Click-through rate (%)
+  viewRate            Float?          // View rate (%)
+  
+  // Métriques de conversion
+  conversions         Int?            // Conversions
+  conversionValue     BigInt?         // Valeur des conversions (micros)
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  // Relations
+  campaign            CampaignRequest @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, date])
+  @@map("kpi_daily")
+}
+
+model Alert {
+  id          String        @id @default(cuid())
+  userId      String?       // Utilisateur concerné (optionnel pour alertes globales)
+  campaignId  String?       // Campagne concernée (optionnel)
+  
+  type        AlertType
+  severity    AlertSeverity
+  audience    AlertAudience
+  
+  title       String        // Titre court de l'alerte
+  message     String        // Message détaillé
+  metadata    Json?         // Données contextuelles (JSON)
+  
+  isRead      Boolean       @default(false)
+  readAt      DateTime?
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign    CampaignRequest? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+model Payment {
+  id                 String        @id @default(cuid())
+  userId             String
+  campaignId         String?       // Campagne associée (optionnel pour paiements groupés)
+  
+  // Stripe
+  stripePaymentId    String?       @unique // Payment Intent ID
+  stripeSessionId    String?       @unique // Checkout Session ID
+  
+  // Montants
+  amountCents        Int           // Montant HT en centimes
+  vatRate            Float         // Taux de TVA (ex: 0.22)
+  vatCents           Int           // Montant TVA en centimes
+  totalCents         Int           // Montant TTC en centimes
+  currency           String        @default("EUR")
+  
+  status             PaymentStatus @default(PENDING)
+  paidAt             DateTime?
+  
+  // Facturation
+  invoiceNumber      String?       @unique
+  invoiceUrl         String?       // URL de la facture PDF
+  
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  // Relations
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign           CampaignRequest? @relation(fields: [campaignId], references: [id])
+
+  @@map("payments")
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  campaignId  String?      // Campagne associée (optionnel)
+  
+  type        DocumentType
+  filename    String       // Nom du fichier
+  originalName String?     // Nom original du fichier uploadé
+  url         String       // URL d'accès au fichier
+  size        Int?         // Taille en bytes
+  mimeType    String?      // Type MIME
+  metadata    Json?        // Métadonnées additionnelles
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  campaign    CampaignRequest? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+// =====================================================
+// TABLES SYSTÈME
+// =====================================================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?  // Utilisateur qui a effectué l'action
+  
+  action      String   // Action effectuée (CREATE, UPDATE, DELETE, etc.)
+  resource    String   // Type de ressource (User, Campaign, etc.)
+  resourceId  String?  // ID de la ressource affectée
+  
+  oldValues   Json?    // Anciennes valeurs (pour UPDATE/DELETE)
+  newValues   Json?    // Nouvelles valeurs (pour CREATE/UPDATE)
+  metadata    Json?    // Métadonnées contextuelles
+  
+  ipAddress   String?  // Adresse IP de l'utilisateur
+  userAgent   String?  // User Agent
+  
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model AppSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique // Clé du paramètre
+  value       String   // Valeur (JSON string si complexe)
+  type        String   @default("string") // Type: string, number, boolean, json
+  description String?  // Description du paramètre
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("app_settings")
+}
+
+// =====================================================
+// TABLES CACHE / TEMPORAIRES
+// =====================================================
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model GoogleTokens {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  accessToken  String   // Token d'accès chiffré
+  refreshToken String?  // Token de rafraîchissement chiffré
+  expiresAt    DateTime
+  scope        String[] // Scopes accordés
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("google_tokens")
+}
+
+// =====================================================
+// INDEX ET OPTIMISATIONS
+// =====================================================
+
+// Index pour les performances
+@@index([User.email])
+@@index([User.role])
+@@index([ClientAccount.googleCustomerId])
+@@index([ClientAccount.linkStatus])
+@@index([CampaignRequest.status])
+@@index([CampaignRequest.startsAt])
+@@index([CampaignRequest.clientAccountId, CampaignRequest.status])
+@@index([KpiDaily.campaignId, KpiDaily.date])
+@@index([Alert.userId, Alert.isRead])
+@@index([Alert.audience, Alert.createdAt])
+@@index([Payment.userId, Payment.status])
+@@index([Payment.stripePaymentId])
+@@index([AuditLog.userId, AuditLog.createdAt])
+@@index([AuditLog.resource, AuditLog.resourceId])

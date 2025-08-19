@@ -1,0 +1,22 @@
+# Development Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Create uploads directory
+RUN mkdir -p /app/uploads
+RUN mkdir -p /app/logs
+
+EXPOSE 3001
+
+CMD ["npm", "run", "dev"]
