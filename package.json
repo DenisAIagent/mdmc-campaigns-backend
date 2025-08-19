@@ -1,6 +1,6 @@
 {
   "name": "@mdmc/backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend API pour MDMC Music Ads",
   "main": "dist/index.js",
   "scripts": {
