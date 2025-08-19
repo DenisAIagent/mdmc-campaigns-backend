@@ -96,6 +96,8 @@ model User {
   refreshTokens    RefreshToken[]
   googleTokens     GoogleTokens?
 
+  @@index([email])
+  @@index([role])
   @@map("users")
 }
 
@@ -115,6 +117,8 @@ model ClientAccount {
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   campaignRequests CampaignRequest[]
 
+  @@index([googleCustomerId])
+  @@index([linkStatus])
   @@map("client_accounts")
 }
 
@@ -155,6 +159,10 @@ model CampaignRequest {
   documents         Document[]
   payments          Payment[]
 
+  @@index([clientAccountId])
+  @@index([status])
+  @@index([startsAt])
+  @@index([googleCampaignId])
   @@map("campaign_requests")
 }
 
@@ -190,6 +198,8 @@ model KpiDaily {
   campaign            CampaignRequest @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@unique([campaignId, date])
+  @@index([campaignId])
+  @@index([date])
   @@map("kpi_daily")
 }
 
@@ -216,6 +226,12 @@ model Alert {
   user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   campaign    CampaignRequest? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([campaignId])
+  @@index([type])
+  @@index([severity])
+  @@index([isRead])
+  @@index([createdAt])
   @@map("alerts")
 }
 
@@ -249,6 +265,10 @@ model Payment {
   user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   campaign           CampaignRequest? @relation(fields: [campaignId], references: [id])
 
+  @@index([userId])
+  @@index([campaignId])
+  @@index([status])
+  @@index([createdAt])
   @@map("payments")
 }
 
@@ -297,6 +317,10 @@ model AuditLog {
   // Relations
   user        User?    @relation(fields: [userId], references: [id])
 
+  @@index([userId])
+  @@index([resource])
+  @@index([resourceId])
+  @@index([createdAt])
   @@map("audit_logs")
 }
 
@@ -329,6 +353,8 @@ model RefreshToken {
   // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([expiresAt])
   @@map("refresh_tokens")
 }
 
@@ -349,22 +375,3 @@ model GoogleTokens {
   @@map("google_tokens")
 }
 
-// =====================================================
-// INDEX ET OPTIMISATIONS
-// =====================================================
-
-// Index pour les performances
-@@index([User.email])
-@@index([User.role])
-@@index([ClientAccount.googleCustomerId])
-@@index([ClientAccount.linkStatus])
-@@index([CampaignRequest.status])
-@@index([CampaignRequest.startsAt])
-@@index([CampaignRequest.clientAccountId, CampaignRequest.status])
-@@index([KpiDaily.campaignId, KpiDaily.date])
-@@index([Alert.userId, Alert.isRead])
-@@index([Alert.audience, Alert.createdAt])
-@@index([Payment.userId, Payment.status])
-@@index([Payment.stripePaymentId])
-@@index([AuditLog.userId, AuditLog.createdAt])
-@@index([AuditLog.resource, AuditLog.resourceId])
