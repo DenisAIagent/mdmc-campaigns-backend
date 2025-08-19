@@ -56,8 +56,7 @@ export class GoogleAdsService {
       const { userId } = stateData
 
       // Exchange code for tokens
-      const tokenResponse = await this.oauth2Client.getAccessToken(code)
-      const tokens = tokenResponse.tokens
+      const { tokens } = await this.oauth2Client.getToken(code)
       
       if (!tokens.access_token || !tokens.refresh_token) {
         throw new GoogleAdsApiError('Failed to obtain Google tokens')
@@ -134,7 +133,7 @@ export class GoogleAdsService {
 
       // Send invitation via Google Ads API
       const response = await customer.customerClientLinks.create([customerClientLink])
-      const resourceName = response.result?.resource_name
+      const resourceName = response.results?.[0]?.resource_name
 
       if (!resourceName) {
         throw new GoogleAdsApiError('Failed to create customer client link')
@@ -197,11 +196,11 @@ export class GoogleAdsService {
           FROM customer_client_link 
           WHERE customer_client_link.resource_name = '${clientAccount.resourceName}'
         `
-        const response = await customer.report({ query })
+        const response = await customer.report(query)
         const link = response[0]
 
         let newStatus: LinkStatus
-        switch (link?.status) {
+        switch (link?.customer_client_link?.status) {
           case 'ACTIVE':
             newStatus = LinkStatus.LINKED
             break
@@ -288,7 +287,7 @@ export class GoogleAdsService {
       } as any
 
       const response = await customer.campaigns.create([campaign])
-      const resourceName = response.result?.resource_name
+      const resourceName = response.results?.[0]?.resource_name
 
       if (!resourceName) {
         throw new GoogleAdsApiError('Failed to create campaign')
@@ -330,7 +329,7 @@ export class GoogleAdsService {
       } as any
 
       const response = await customer.adGroups.create([adGroup])
-      const resourceName = response.result?.resource_name
+      const resourceName = response.results?.[0]?.resource_name
 
       if (!resourceName) {
         throw new GoogleAdsApiError('Failed to create ad group')

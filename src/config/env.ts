@@ -6,7 +6,7 @@ dotenv.config();
 const envSchema = z.object({
   // Application
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  API_PORT: z.string().transform(Number).default(3001),
+  API_PORT: z.string().transform(Number).default('3001'),
   API_BASE_URL: z.string().url().default('http://localhost:3001'),
 
   // Database
@@ -18,7 +18,7 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32),
   JWT_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  BCRYPT_ROUNDS: z.string().transform(Number).default(12),
+  BCRYPT_ROUNDS: z.string().transform(Number).default('12'),
 
   // Google APIs
   GOOGLE_CLIENT_ID: z.string(),
@@ -33,26 +33,26 @@ const envSchema = z.object({
 
   // Email
   SMTP_HOST: z.string().default('localhost'),
-  SMTP_PORT: z.string().transform(Number).default(587),
-  SMTP_SECURE: z.string().transform(val => val === 'true').default(false),
+  SMTP_PORT: z.string().transform(Number).default('587'),
+  SMTP_SECURE: z.string().transform(val => val === 'true').default('false'),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().email().default('noreply@mdmc.fr'),
 
   // File Upload
   UPLOAD_DIR: z.string().default('./uploads'),
-  MAX_FILE_SIZE: z.string().transform(Number).default(10485760), // 10MB
+  MAX_FILE_SIZE: z.string().transform(Number).default('10485760'), // 10MB
 
   // Features
-  ENABLE_REGISTRATION: z.string().transform(val => val === 'true').default(true),
-  ENABLE_GOOGLE_ADS_SYNC: z.string().transform(val => val === 'true').default(true),
-  ENABLE_EMAIL_NOTIFICATIONS: z.string().transform(val => val === 'true').default(true),
+  ENABLE_REGISTRATION: z.string().transform(val => val === 'true').default('true'),
+  ENABLE_GOOGLE_ADS_SYNC: z.string().transform(val => val === 'true').default('true'),
+  ENABLE_EMAIL_NOTIFICATIONS: z.string().transform(val => val === 'true').default('true'),
 
   // Business Rules
-  DEFAULT_CAMPAIGN_PRICE_EUR: z.string().transform(Number).default(200),
-  VAT_RATE: z.string().transform(Number).default(0.22),
-  CAMPAIGN_DURATION_DAYS: z.string().transform(Number).default(30),
-  MAX_CAMPAIGNS_PER_USER: z.string().transform(Number).default(10),
+  DEFAULT_CAMPAIGN_PRICE_EUR: z.string().transform(Number).default('200'),
+  VAT_RATE: z.string().transform(Number).default('0.22'),
+  CAMPAIGN_DURATION_DAYS: z.string().transform(Number).default('30'),
+  MAX_CAMPAIGNS_PER_USER: z.string().transform(Number).default('10'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

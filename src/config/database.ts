@@ -10,7 +10,7 @@ export const prisma =
   globalThis.__prisma ||
   new PrismaClient({
     log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    errorFormat: 'colored',
+    errorFormat: 'pretty',
   });
 
 if (env.NODE_ENV !== 'production') {

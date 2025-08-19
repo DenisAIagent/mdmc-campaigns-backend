@@ -61,9 +61,7 @@ export class StripeService {
               name: campaigns.length === 1 
                 ? `Campagne YouTube Ads - ${campaigns[0]?.clipTitle || 'Sans titre'}`
                 : `${campaigns.length} Campagnes YouTube Ads`,
-              description: campaigns.length === 1
-                ? 'Campagne publicitaire YouTube Ads de 30 jours'
-                : `${campaigns.length} campagnes publicitaires YouTube Ads de 30 jours chacune`,
+
               metadata: {
                 type: 'youtube_ads_campaign',
                 duration_days: '30',
