@@ -45,14 +45,14 @@ if (env.NODE_ENV === 'production') {
         winston.format.timestamp(),
         winston.format.json()
       ),
-    }),
+    }) as any,
     new winston.transports.File({
       filename: 'logs/combined.log',
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
       ),
-    }),
+    }) as any,
   );
 }
 

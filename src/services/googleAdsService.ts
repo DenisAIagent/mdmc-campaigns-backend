@@ -56,7 +56,8 @@ export class GoogleAdsService {
       const { userId } = stateData
 
       // Exchange code for tokens
-      const { tokens } = await this.oauth2Client.getAccessToken(code)
+      const tokenResponse = await this.oauth2Client.getAccessToken(code)
+      const tokens = tokenResponse.tokens
       
       if (!tokens.access_token || !tokens.refresh_token) {
         throw new GoogleAdsApiError('Failed to obtain Google tokens')
@@ -133,7 +134,7 @@ export class GoogleAdsService {
 
       // Send invitation via Google Ads API
       const response = await customer.customerClientLinks.create([customerClientLink])
-      const resourceName = response.results[0]?.resource_name
+      const resourceName = response.result?.resource_name
 
       if (!resourceName) {
         throw new GoogleAdsApiError('Failed to create customer client link')
@@ -191,13 +192,13 @@ export class GoogleAdsService {
       const managerCustomerId = env.MCC_CUSTOMER_ID.replace(/-/g, '')
       
       try {
-        const response = await customer.customerClientLinks.list({
-          customer_id: managerCustomerId,
-        })
-
-        const link = response.results.find(
-          (link: CustomerClientLink) => link.resource_name === clientAccount.resourceName
-        )
+        const query = `
+          SELECT customer_client_link.resource_name, customer_client_link.status
+          FROM customer_client_link 
+          WHERE customer_client_link.resource_name = '${clientAccount.resourceName}'
+        `
+        const response = await customer.report({ query })
+        const link = response[0]
 
         let newStatus: LinkStatus
         switch (link?.status) {
@@ -260,10 +261,34 @@ export class GoogleAdsService {
         start_date: campaignConfig.start_date,
         end_date: campaignConfig.end_date,
         video_campaign_settings: campaignConfig.video_campaign_settings,
-      }
+        resource_name: '',
+        primary_status: 'UNKNOWN' as const,
+        primary_status_reasons: [],
+        serving_status: 'UNKNOWN' as const,
+        ad_serving_optimization_status: 'UNKNOWN' as const,
+        optimization_score: 0,
+        experiment_type: 'UNKNOWN' as const,
+        tracking_url_template: '',
+        url_custom_parameters: [],
+        final_url_suffix: '',
+        frequency_caps: [],
+        real_time_bidding_setting: {},
+        network_settings: {},
+        hotel_setting: {},
+        dynamic_search_ads_setting: {},
+        shopping_setting: {},
+        targeting_setting: {},
+        audience_setting: {},
+        geo_target_type_setting: {},
+        local_campaign_setting: {},
+        app_campaign_setting: {},
+        labels: [],
+        excluded_parent_asset_field_types: [],
+        url_expansion_opt_out: false
+      } as any
 
       const response = await customer.campaigns.create([campaign])
-      const resourceName = response.results[0]?.resource_name
+      const resourceName = response.result?.resource_name
 
       if (!resourceName) {
         throw new GoogleAdsApiError('Failed to create campaign')
@@ -302,10 +327,10 @@ export class GoogleAdsService {
         campaign: `customers/${customerId}/campaigns/${campaignId}`,
         target_cpv: adGroupConfig.target_cpv,
         default_max_cpc: adGroupConfig.default_max_cpc,
-      }
+      } as any
 
       const response = await customer.adGroups.create([adGroup])
-      const resourceName = response.results[0]?.resource_name
+      const resourceName = response.result?.resource_name
 
       if (!resourceName) {
         throw new GoogleAdsApiError('Failed to create ad group')
@@ -416,6 +441,14 @@ export class GoogleAdsService {
       throw new NotFoundError('Google tokens not found for user')
     }
 
+    const clientAccount = await prisma.clientAccount.findUnique({
+      where: { userId }
+    })
+
+    if (!clientAccount?.googleCustomerId) {
+      throw new NotFoundError('Google customer ID not found for user')
+    }
+
     // Check if token is expired and refresh if needed
     if (tokens.expiresAt < new Date()) {
       await this.refreshTokens(userId)
@@ -426,6 +459,7 @@ export class GoogleAdsService {
     const refreshToken = await this.decryptToken(tokens.refreshToken!)
 
     return {
+      customer_id: clientAccount.googleCustomerId,
       client_id: env.GOOGLE_CLIENT_ID,
       client_secret: env.GOOGLE_CLIENT_SECRET,
       refresh_token: refreshToken,

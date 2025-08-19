@@ -47,7 +47,10 @@ export class StripeService {
       const totalCents = amountCents + vatCents
 
       // Get user email
-      const userEmail = campaigns[0].clientAccount.user.email
+      const userEmail = campaigns[0]?.clientAccount?.user?.email
+      if (!userEmail) {
+        throw new Error('User email not found')
+      }
 
       // Create line items
       const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
@@ -56,7 +59,7 @@ export class StripeService {
             currency: 'eur',
             product_data: {
               name: campaigns.length === 1 
-                ? `Campagne YouTube Ads - ${campaigns[0].clipTitle}`
+                ? `Campagne YouTube Ads - ${campaigns[0]?.clipTitle || 'Sans titre'}`
                 : `${campaigns.length} Campagnes YouTube Ads`,
               description: campaigns.length === 1
                 ? 'Campagne publicitaire YouTube Ads de 30 jours'
@@ -103,7 +106,7 @@ export class StripeService {
         },
         payment_intent_data: {
           description: campaigns.length === 1 
-            ? `Campagne: ${campaigns[0].clipTitle}`
+            ? `Campagne: ${campaigns[0]?.clipTitle || 'Sans titre'}`
             : `${campaigns.length} campagnes YouTube Ads`,
           metadata: {
             user_id: userId,
@@ -512,7 +515,6 @@ export class StripeService {
         unit_amount: amountCents,
         product_data: {
           name: `Campagne YouTube Ads personnalisée - ${amountEur}€`,
-          description: 'Campagne publicitaire YouTube Ads personnalisée de 30 jours',
           metadata: {
             type: 'custom_campaign',
             duration_days: '30',

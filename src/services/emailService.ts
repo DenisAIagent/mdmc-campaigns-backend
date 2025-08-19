@@ -39,7 +39,7 @@ export class EmailService {
   private transporter: nodemailer.Transporter
 
   constructor() {
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
       secure: env.SMTP_SECURE,
@@ -153,7 +153,7 @@ export class EmailService {
   // Template generators
   private getWelcomeTemplate(data: WelcomeEmailData): EmailTemplate {
     const { user } = data
-    const dashboardUrl = `${env.APP_BASE_URL}/dashboard`
+    const dashboardUrl = `${env.API_BASE_URL}/dashboard`
 
     return {
       subject: 'Bienvenue sur MDMC Music Ads ! 🎵',
@@ -341,7 +341,7 @@ export class EmailService {
 
   private getCampaignLaunchedTemplate(data: CampaignLaunchedEmailData): EmailTemplate {
     const { user, campaign } = data
-    const dashboardUrl = `${env.APP_BASE_URL}/dashboard/campaigns/${campaign.id}`
+    const dashboardUrl = `${env.API_BASE_URL}/dashboard/campaigns/${campaign.id}`
 
     return {
       subject: `🚀 Campagne "${campaign.clipTitle}" lancée avec succès !`,
@@ -495,7 +495,7 @@ export class EmailService {
             </ol>
             
             <div style="text-align: center;">
-              <a href="${env.APP_BASE_URL}/dashboard" class="button">Mon Dashboard</a>
+              <a href="${env.API_BASE_URL}/dashboard" class="button">Mon Dashboard</a>
               ${invoiceUrl ? `<a href="${invoiceUrl}" class="button">Télécharger la facture</a>` : ''}
             </div>
             
@@ -533,7 +533,7 @@ export class EmailService {
         3. Suivi - Monitoring et optimisations quotidiennes
         4. Reporting - Rapports réguliers sur les performances
         
-        Dashboard : ${env.APP_BASE_URL}/dashboard
+        Dashboard : ${env.API_BASE_URL}/dashboard
         ${invoiceUrl ? `Facture : ${invoiceUrl}` : ''}
         
         Besoin d'aide ?
@@ -549,7 +549,7 @@ export class EmailService {
 
   private getPasswordResetTemplate(data: PasswordResetEmailData): EmailTemplate {
     const { user, resetToken } = data
-    const resetUrl = `${env.APP_BASE_URL}/auth/reset-password?token=${resetToken}`
+    const resetUrl = `${env.API_BASE_URL}/auth/reset-password?token=${resetToken}`
 
     return {
       subject: '🔒 Réinitialisation de votre mot de passe MDMC',
