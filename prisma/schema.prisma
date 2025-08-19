@@ -124,6 +124,7 @@ model ClientAccount {
 
 model CampaignRequest {
   id                 String         @id @default(cuid())
+  userId             String         // User who created the campaign
   clientAccountId    String
   
   // Configuration campagne
@@ -153,12 +154,14 @@ model CampaignRequest {
   updatedAt          DateTime       @updatedAt
 
   // Relations
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   clientAccount      ClientAccount  @relation(fields: [clientAccountId], references: [id], onDelete: Cascade)
   kpiDaily          KpiDaily[]
   alerts            Alert[]
   documents         Document[]
   payments          Payment[]
 
+  @@index([userId])
   @@index([clientAccountId])
   @@index([status])
   @@index([startsAt])
