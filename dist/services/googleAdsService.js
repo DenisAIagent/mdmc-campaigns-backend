@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.googleAdsService = exports.GoogleAdsService = void 0;
 const google_ads_api_1 = require("google-ads-api");
 const google_auth_library_1 = require("google-auth-library");
-const database_1 = require("@/config/database");
-const env_1 = require("@/config/env");
-const logger_1 = require("@/utils/logger");
-const errors_1 = require("@/utils/errors");
+const database_1 = require("../config/database");
+const env_1 = require("../config/env");
+const logger_1 = require("../utils/logger");
+const errors_1 = require("../utils/errors");
 const client_1 = require("@prisma/client");
 class GoogleAdsService {
     client;

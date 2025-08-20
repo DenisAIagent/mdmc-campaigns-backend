@@ -7,10 +7,10 @@ exports.authService = exports.AuthService = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client_1 = require("@prisma/client");
-const database_1 = require("@/config/database");
-const redis_1 = require("@/config/redis");
-const env_1 = require("@/config/env");
-const errors_1 = require("@/utils/errors");
+const database_1 = require("../config/database");
+const redis_1 = require("../config/redis");
+const env_1 = require("../config/env");
+const errors_1 = require("../utils/errors");
 class AuthService {
     jwtSecret = env_1.env.JWT_SECRET;
     jwtRefreshSecret = env_1.env.JWT_REFRESH_SECRET;

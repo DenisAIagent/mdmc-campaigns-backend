@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.billingService = exports.BillingService = void 0;
 const client_1 = require("@prisma/client");
-const errors_1 = require("@/utils/errors");
-const logger_1 = require("@/utils/logger");
-const env_1 = require("@/config/env");
+const errors_1 = require("../utils/errors");
+const logger_1 = require("../utils/logger");
+const env_1 = require("../config/env");
 const prisma = new client_1.PrismaClient();
 class BillingService {
     async getUserPayments(userId, filters) {

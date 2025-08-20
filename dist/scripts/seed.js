@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const env_1 = require("@/config/env");
+const env_1 = require("../config/env");
 const prisma = new client_1.PrismaClient();
 async function main() {
     console.log('🌱 Starting database seeding...');

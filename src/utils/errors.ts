@@ -17,6 +17,18 @@ export class ValidationError extends AppError {
   }
 }
 
+export class BadRequestError extends AppError {
+  constructor(message: string) {
+    super(message, 400);
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message: string = 'Access forbidden') {
+    super(message, 403);
+  }
+}
+
 export class AuthenticationError extends AppError {
   constructor(message: string = 'Authentication required') {
     super(message, 401);

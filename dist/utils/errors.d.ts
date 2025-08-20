@@ -6,6 +6,12 @@ export declare class AppError extends Error {
 export declare class ValidationError extends AppError {
     constructor(message: string);
 }
+export declare class BadRequestError extends AppError {
+    constructor(message: string);
+}
+export declare class ForbiddenError extends AppError {
+    constructor(message?: string);
+}
 export declare class AuthenticationError extends AppError {
     constructor(message?: string);
 }

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.billingController = exports.BillingController = void 0;
-const stripeService_1 = require("@/services/stripeService");
-const billingService_1 = require("@/services/billingService");
-const logger_1 = require("@/utils/logger");
+const stripeService_1 = require("../services/stripeService");
+const billingService_1 = require("../services/billingService");
+const logger_1 = require("../utils/logger");
 class BillingController {
     async createCheckoutSession(req, res, next) {
         try {

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateRequest = exports.validateYouTubeUrl = exports.extractYouTubeVideoId = exports.fileSchemas = exports.alertSchemas = exports.billingSchemas = exports.campaignSchemas = exports.googleSchemas = exports.authSchemas = exports.commonSchemas = exports.validate = void 0;
 const zod_1 = require("zod");
-const errors_1 = require("@/utils/errors");
+const errors_1 = require("../utils/errors");
 const validate = (schema) => {
     return (req, res, next) => {
         try {

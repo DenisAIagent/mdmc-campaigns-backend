@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const billingController_1 = require("@/controllers/billingController");
-const auth_1 = require("@/middleware/auth");
-const validation_1 = require("@/middleware/validation");
-const rateLimit_1 = require("@/middleware/rateLimit");
+const billingController_1 = require("../controllers/billingController");
+const auth_1 = require("../middleware/auth");
+const validation_1 = require("../middleware/validation");
+const rateLimit_1 = require("../middleware/rateLimit");
 const zod_1 = require("zod");
 const express_2 = __importDefault(require("express"));
 const router = (0, express_1.Router)();

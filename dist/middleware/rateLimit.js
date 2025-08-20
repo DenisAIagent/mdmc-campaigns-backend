@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emailRateLimit = exports.stripeRateLimit = exports.googleAdsRateLimit = exports.webhookRateLimit = exports.uploadRateLimit = exports.apiRateLimit = exports.authRateLimit = exports.globalRateLimit = exports.createRateLimiter = void 0;
+exports.emailRateLimit = exports.stripeRateLimit = exports.googleAdsRateLimit = exports.webhookRateLimit = exports.uploadRateLimit = exports.apiRateLimit = exports.authRateLimit = exports.globalRateLimit = exports.createRateLimiter = exports.createRateLimit = void 0;
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const redis_1 = require("@/config/redis");
-const errors_1 = require("@/utils/errors");
+const redis_1 = require("../config/redis");
+const errors_1 = require("../utils/errors");
 // Create a Redis store for rate limiting
 class RedisStore {
     prefix;
@@ -37,6 +37,8 @@ class RedisStore {
     }
 }
 // Custom rate limiter using Redis
+const createRateLimit = (options) => (0, exports.createRateLimiter)(options);
+exports.createRateLimit = createRateLimit;
 const createRateLimiter = (options) => {
     const store = new RedisStore();
     return async (req, res, next) => {

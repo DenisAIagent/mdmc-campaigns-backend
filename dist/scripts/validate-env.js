@@ -5,9 +5,9 @@
  * Vérifie que toutes les variables nécessaires sont configurées
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const env_1 = require("@/config/env");
-const database_1 = require("@/config/database");
-const redis_1 = require("@/config/redis");
+const env_1 = require("../config/env");
+const database_1 = require("../config/database");
+const redis_1 = require("../config/redis");
 async function validateEnvironment() {
     const results = [];
     // Test configuration variables

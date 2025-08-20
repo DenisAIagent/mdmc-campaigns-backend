@@ -1,4 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+export declare const createRateLimit: (options: {
+    windowMs: number;
+    max: number;
+    keyGenerator?: (req: Request) => string;
+    skipIf?: (req: Request) => boolean;
+    message?: string;
+}) => (req: Request, res: Response, next: NextFunction) => Promise<void>;
 export declare const createRateLimiter: (options: {
     windowMs: number;
     max: number;

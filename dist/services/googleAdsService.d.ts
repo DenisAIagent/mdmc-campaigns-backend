@@ -1,5 +1,5 @@
 import { LinkStatus } from '@prisma/client';
-import type { CampaignConfiguration, AdGroupConfiguration, GoogleAdsMetrics } from '@/types/google-ads';
+import type { CampaignConfiguration, AdGroupConfiguration, GoogleAdsMetrics } from '../types/google-ads';
 export declare class GoogleAdsService {
     private client;
     private oauth2Client;

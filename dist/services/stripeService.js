@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stripeService = exports.StripeService = void 0;
 const stripe_1 = __importDefault(require("stripe"));
-const database_1 = require("@/config/database");
-const redis_1 = require("@/config/redis");
-const env_1 = require("@/config/env");
-const logger_1 = require("@/utils/logger");
-const errors_1 = require("@/utils/errors");
+const database_1 = require("../config/database");
+const redis_1 = require("../config/redis");
+const env_1 = require("../config/env");
+const logger_1 = require("../utils/logger");
+const errors_1 = require("../utils/errors");
 const client_1 = require("@prisma/client");
 class StripeService {
     stripe;

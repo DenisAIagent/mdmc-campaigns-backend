@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const campaignController_1 = require("@/controllers/campaignController");
-const auth_1 = require("@/middleware/auth");
-const validation_1 = require("@/middleware/validation");
-const rateLimit_1 = require("@/middleware/rateLimit");
+const campaignController_1 = require("../controllers/campaignController");
+const auth_1 = require("../middleware/auth");
+const validation_1 = require("../middleware/validation");
+const rateLimit_1 = require("../middleware/rateLimit");
 const zod_1 = require("zod");
 const router = (0, express_1.Router)();
 // Apply authentication to all campaign routes

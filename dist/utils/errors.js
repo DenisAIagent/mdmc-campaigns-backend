@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorCodes = exports.ExternalServiceError = exports.DatabaseError = exports.StripeError = exports.GoogleAdsApiError = exports.RateLimitError = exports.ConflictError = exports.NotFoundError = exports.AuthorizationError = exports.AuthenticationError = exports.ValidationError = exports.AppError = void 0;
+exports.ErrorCodes = exports.ExternalServiceError = exports.DatabaseError = exports.StripeError = exports.GoogleAdsApiError = exports.RateLimitError = exports.ConflictError = exports.NotFoundError = exports.AuthorizationError = exports.AuthenticationError = exports.ForbiddenError = exports.BadRequestError = exports.ValidationError = exports.AppError = void 0;
 class AppError extends Error {
     statusCode;
     isOperational;
@@ -18,6 +18,18 @@ class ValidationError extends AppError {
     }
 }
 exports.ValidationError = ValidationError;
+class BadRequestError extends AppError {
+    constructor(message) {
+        super(message, 400);
+    }
+}
+exports.BadRequestError = BadRequestError;
+class ForbiddenError extends AppError {
+    constructor(message = 'Access forbidden') {
+        super(message, 403);
+    }
+}
+exports.ForbiddenError = ForbiddenError;
 class AuthenticationError extends AppError {
     constructor(message = 'Authentication required') {
         super(message, 401);

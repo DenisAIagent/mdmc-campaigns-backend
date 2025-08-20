@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.campaignController = exports.CampaignController = void 0;
 const zod_1 = require("zod");
-const logger_1 = require("@/utils/logger");
-const campaignService_1 = require("@/services/campaignService");
-const errors_1 = require("@/utils/errors");
+const logger_1 = require("../utils/logger");
+const campaignService_1 = require("../services/campaignService");
+const errors_1 = require("../utils/errors");
 // Validation schemas
 const createCampaignSchema = zod_1.z.object({
     clipUrl: zod_1.z.string().url('URL YouTube invalide'),

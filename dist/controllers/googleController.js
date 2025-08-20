@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.googleController = exports.GoogleController = void 0;
-const googleAdsService_1 = require("@/services/googleAdsService");
-const logger_1 = require("@/utils/logger");
+const googleAdsService_1 = require("../services/googleAdsService");
+const logger_1 = require("../utils/logger");
 class GoogleController {
     async generateOAuthUrl(req, res, next) {
         try {

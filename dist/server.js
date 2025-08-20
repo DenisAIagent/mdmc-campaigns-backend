@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = require("http");
 const app_1 = __importDefault(require("./app"));
-const env_1 = require("@/config/env");
-const database_1 = require("@/config/database");
-const redis_1 = require("@/config/redis");
-const logger_1 = require("@/utils/logger");
-const errorHandler_1 = require("@/middleware/errorHandler");
+const env_1 = require("./config/env");
+const database_1 = require("./config/database");
+const redis_1 = require("./config/redis");
+const logger_1 = require("./utils/logger");
+const errorHandler_1 = require("./middleware/errorHandler");
 // Setup global error handlers
 (0, errorHandler_1.setupGlobalErrorHandlers)();
 const server = (0, http_1.createServer)(app_1.default);

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setupGlobalErrorHandlers = exports.notFoundHandler = exports.errorHandler = exports.addRequestId = void 0;
-const errors_1 = require("@/utils/errors");
-const logger_1 = require("@/utils/logger");
-const env_1 = require("@/config/env");
+const errors_1 = require("../utils/errors");
+const logger_1 = require("../utils/logger");
+const env_1 = require("../config/env");
 const client_1 = require("@prisma/client");
 const zod_1 = require("zod");
 // Generate unique request ID for tracking

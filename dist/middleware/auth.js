@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateApiKey = exports.requireOwnership = exports.optionalAuth = exports.authorize = exports.authenticate = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const database_1 = require("@/config/database");
-const env_1 = require("@/config/env");
-const errors_1 = require("@/utils/errors");
+const database_1 = require("../config/database");
+const env_1 = require("../config/env");
+const errors_1 = require("../utils/errors");
 const client_1 = require("@prisma/client");
 const authenticate = async (req, res, next) => {
     try {

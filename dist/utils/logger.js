@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.morganStream = exports.logger = void 0;
 const winston_1 = __importDefault(require("winston"));
-const env_1 = require("@/config/env");
+const env_1 = require("../config/env");
 // Define log levels
 const levels = {
     error: 0,

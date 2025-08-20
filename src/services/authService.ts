@@ -293,7 +293,7 @@ export class AuthService {
 
     const accessToken = jwt.sign(accessTokenPayload, this.jwtSecret, {
       expiresIn: this.jwtExpiresIn,
-    });
+    } as any);
 
     // Generate refresh token
     const refreshTokenPayload: Omit<RefreshTokenPayload, 'tokenId'> = {
@@ -302,7 +302,7 @@ export class AuthService {
 
     const refreshToken = jwt.sign(refreshTokenPayload, this.jwtRefreshSecret, {
       expiresIn: this.jwtRefreshExpiresIn,
-    });
+    } as any);
 
     // Store refresh token in database
     const expiresAt = new Date();

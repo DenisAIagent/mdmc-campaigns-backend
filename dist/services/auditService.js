@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.auditService = exports.AuditService = void 0;
 const client_1 = require("@prisma/client");
-const logger_1 = require("@/utils/logger");
+const logger_1 = require("../utils/logger");
 const prisma = new client_1.PrismaClient();
 class AuditService {
     async log(data) {

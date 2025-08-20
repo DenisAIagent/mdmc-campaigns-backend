@@ -39,6 +39,14 @@ class RedisStore {
 }
 
 // Custom rate limiter using Redis
+export const createRateLimit = (options: {
+  windowMs: number;
+  max: number;
+  keyGenerator?: (req: Request) => string;
+  skipIf?: (req: Request) => boolean;
+  message?: string;
+}) => createRateLimiter(options);
+
 export const createRateLimiter = (options: {
   windowMs: number;
   max: number;
